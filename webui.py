@@ -146,7 +146,7 @@ def main():
             tts_text = gr.Textbox(
                 label="输入合成文本", 
                 lines=3, 
-                value="这是一个示例语句。",
+                value="提示词<|endofprompt|>这是一个示例语句。",
                 placeholder="请在此输入您想要合成的文本内容...",
                 elem_id="tts-text"
             )
