@@ -74,6 +74,9 @@ class CosyVoice:
         self.frontend.spk2info[zero_shot_spk_id] = model_input
         return True
 
+    def save_spkinfo(self):
+        torch.save(self.frontend.spk2info, '{}/spk2info.pt'.format(self.model_dir))
+
     def inference_sft(self, tts_text, spk_id, stream=False, speed=1.0, text_frontend=True):
         for i in tqdm(self.frontend.text_normalize(tts_text, split=True, text_frontend=text_frontend)):
             model_input = self.frontend.frontend_sft(i, spk_id)
@@ -99,9 +102,9 @@ class CosyVoice:
                 yield model_output
                 start_time = time.time()
 
-    def inference_cross_lingual(self, tts_text, prompt_speech_16k, stream=False, speed=1.0, text_frontend=True):
+    def inference_cross_lingual(self, tts_text, prompt_speech_16k, zero_shot_spk_id='', stream=False, speed=1.0, text_frontend=True):
         for i in tqdm(self.frontend.text_normalize(tts_text, split=True, text_frontend=text_frontend)):
-            model_input = self.frontend.frontend_cross_lingual(i, prompt_speech_16k, self.sample_rate)
+            model_input = self.frontend.frontend_cross_lingual(i, prompt_speech_16k, self.sample_rate, zero_shot_spk_id)
             start_time = time.time()
             logging.info('synthesis text {}'.format(i))
             for model_output in self.model.tts(**model_input, stream=stream, speed=speed):
