@@ -23,7 +23,6 @@
 - Conda 3.10+
 - PyTorch 1.10+
 - CUDA 11.0+ (GPU 支持)
-- FFmpeg
 - ModelScope SDK
 - 8GB+ RAM
 
