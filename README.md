@@ -243,12 +243,6 @@ graph TB
     style Features fill:#fff2cc,stroke:#333,color:#000
 ```
 
-## 👥 团队
-
-- 项目负责人：[HatsuChuwu](https://github.com/HatsuChuwu)
-- 核心开发者：[HatsuChuwu](https://github.com/HatsuChuwu) [theKing](https://github.com/Yinye1986)
-- 成员：FengZhou、XuTianYu、XiaoZhiPeng
-
 ## 🙏 致谢
 
 
