@@ -7,7 +7,8 @@
 ## 📖 项目介绍
 
 育音EduVoiceLab 是一个创新的教育科技项目，致力于将 AI 语音合成技术应用于教育领域。通过TTS声音克隆和文本转语音，为教育工作者和学习者提供个性化的语音解决方案。
-本项目基于[Cosyvocie](https://github.com/FunAudioLLM/CosyVoice)开发.
+
+本项目基于[Cosyvocie](https://github.com/FunAudioLLM/CosyVoice)进行二次开发。
 
 ### 🌟 核心特性
 
