@@ -37,7 +37,7 @@
 使用以下命令克隆项目仓库并初始化子模块：
 
 ```bash
-git clone --recursive https://github.com/HatsuChuwu/EduVoiceLab.git
+git clone --recursive https://github.com/ChuwuYo/EduVoiceLab.git
 cd EduVoiceLab
 git submodule update --init --recursive
 ```
