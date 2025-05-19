@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduVoiceLab登录</title> <style>
+        /* 定义背景变量 */
+        :root {
+            --bg: repeating-linear-gradient(
+                45deg,       /* 渐变角度为45度 */
+                #a7f3d0,     /* 起始颜色：浅绿色 */
+                #a7f3d0 10px, /* 颜色块宽度：10px */
+                #ecfdf5 10px, /* 下一段颜色从10px开始 */
+                #ecfdf5 20px  /* 颜色块总宽度：20px（形成10px间隔的条纹） */
+            );
+        }
+
+        /* 全局样式 */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center; /* 水平居中 */
+            align-items: center;     /* 垂直居中，后续通过transform调整偏移 */
+            min-height: 100vh;
+            background: var(--bg); 
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Logo容器样式 */
+        .logo-container { 
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: rgba(255, 255, 255, 0.85); 
+            border-radius: 8px; 
+            padding: 5px; 
+            transition: transform 0.3s ease;
+        }
+
+        .logo-container.fade-in { 
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .logo-container:hover { 
+            transform: scale(1.1);
+        }
+
+        /* Logo图片样式 */
+        .logo-container .logo { 
+            display: block; 
+            width: 140px;
+            height: auto;
+            opacity: 0.8; 
+            position: static; 
+            top: auto;
+            left: auto;
+            transition: none;
+        }
+
+
+        /* 表单容器 (依然使用 .register 类保持样式一致) */
+        .register { /* 沿用注册页面的卡片样式类 */
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 30px; 
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            width: 100%; 
+            max-width: 400px; 
+            text-align: left; 
+            position: relative;
+            transform: translateY(-10px); 
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        /* 保留hover时的 transform 效果 */
+        .register:hover {
+            transform: translateY(-15px); 
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.15);
+        }
+
+
+        /* 标题样式 */
+        .register h1 {
+            margin: 0 0 10px 0;
+            font-size: 24px;
+            color: #333;
+            transition: color 0.3s ease;
+        }
+
+        .register h1:hover {
+            color: #55c5ea;
+        }
+
+        /* 次标题样式 */
+        .register h2 {
+            margin: 0 0 20px 0;
+            font-size: 14px;
+            color: #666;
+            transition: color 0.3s ease;
+        }
+
+        /* 输入框容器 */
+        .input-group {
+            margin-bottom: 15px; 
+            position: relative;
+        }
+
+        /* 标签样式 */
+        .input-group label {
+            display: block;
+            margin-bottom: 6px;
+            color: #333;
+            font-size: 14px;
+            transition: color 0.3s ease;
+        }
+
+        /* 输入框样式 (用户名、密码) */
+        /* 选择器简化，因为只有 text 和 password 输入框了 */
+        .input-group input:not([type="checkbox"]) { 
+             width: 100%; 
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s ease;
+            background-color: #fff;
+            box-sizing: border-box; 
+        }
+
+        .input-group input:not([type="checkbox"]):focus {
+            border-color: #55c5ea;
+            box-shadow: 0 0 0 3px rgba(85, 197, 234, 0.2);
+        }
+
+        /* 输入错误状态 (样式保留，但需要JS来动态添加此类) */
+        .input-error {
+            border-color: #ff4444 !important;
+            box-shadow: 0 0 0 3px rgba(255, 68, 68, 0.2);
+        }
+
+        /* 错误信息样式 (样式保留，但需要JS来动态控制显示) */
+        .error-message {
+            color: #ff4444;
+            font-size: 12px;
+            margin-top: 4px;
+            transition: all 0.3s ease;
+            display: none; 
+        }
+
+        .error-message.show { 
+            display: block; 
+        }
+
+        /* 手机号前缀选择样式 - 登录页面不再需要，但保留定义 */
+        .phone-prefix {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%; 
+            box-sizing: border-box; 
+        }
+
+        .phone-prefix select {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s ease;
+            background-color: #fff;
+            box-sizing: border-box; 
+        }
+
+        .phone-prefix select:focus {
+            border-color: #55c5ea;
+            box-shadow: 0 0 0 3px rgba(85, 197, 234, 0.2);
+        }
+
+        .phone-prefix input[type="tel"] { 
+             flex: 1; 
+            width: auto; 
+            padding: 12px; 
+            border: 2px solid #e0e0e0; 
+            border-radius: 8px; 
+            font-size: 14px; 
+            outline: none; 
+            transition: all 0.3s ease; 
+            background-color: #fff; 
+            box-sizing: border-box; 
+        }
+         .phone-prefix input[type="tel"]:focus {
+            border-color: #55c5ea;
+            box-shadow: 0 0 0 3px rgba(85, 197, 234, 0.2);
+         }
+
+
+        /* 同意协议样式 - 登录页面不再需要，但保留定义 */
+        .agree-terms {
+            margin-bottom: 20px; 
+        }
+
+        .agree-terms label {
+            display: flex; 
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #666;
+            cursor: pointer;
+        }
+
+        .agree-terms input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .agree-terms a {
+            color: #55c5ea;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .agree-terms a:hover {
+            color: #77e8fe;
+            text-decoration: underline;
+        }
+
+        /* 登录按钮样式 (沿用注册页面的按钮样式类) */
+        .register-button { /* 沿用注册页面的按钮样式类 */
+            width: 100%; 
+            max-width: 300px; 
+            display: block; 
+            margin: 0 auto; 
+            margin-top: 20px; /* 与上方最后一个输入框组或链接组的间距 */
+
+            padding: 14px;
+            background-color: #55c5ea;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .register-button:hover {
+            background-color: #77e8fe;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(85, 197, 234, 0.3);
+        }
+
+        .register-button:active {
+            transform: translateY(0);
+        }
+
+        /* 还没有帐号链接文本样式 */
+        .register-link-text { /* 修改类名以区分 */
+            text-align: center; 
+            margin-top: 20px; 
+            font-size: 14px; 
+            color: #666; 
+        }
+
+         /* 还没有帐号链接样式 */
+        .register-link-text a { /* 修改类名以区分 */
+             color: #55c5ea; 
+             text-decoration: none;
+             transition: color 0.3s ease;
+        }
+
+        .register-link-text a:hover { /* 修改类名以区分 */
+            color: #77e8fe; 
+            text-decoration: underline;
+        }
+
+
+        /* 加载指示器样式 (不再自动生效，但保留定义) */
+        .htmx-indicator {
+            display: none; 
+            transition: opacity 0.3s ease;
+        }
+
+        /* Footer样式 */
+        footer {
+            position: absolute;
+            bottom: 10px;
+            width: 100%;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            transition: opacity 0.3s ease;
+        }
+
+        footer:hover {
+            opacity: 0.8;
+        }
+
+        /* 响应式适配 */
+        @media (max-width: 480px) {
+            .register {
+                width: 90%;
+                max-width: 350px; 
+                padding: 20px; 
+                margin: 20px;
+                transform: translateY(-5px); 
+            }
+
+            .logo {
+                width: 80px;
+            }
+
+            .register-button {
+                 max-width: 250px; 
+            }
+        }
+
+        /* 禁用状态样式 */
+        input:disabled, 
+        select:disabled, 
+        button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        
+        /* 添加动画相关的CSS */
+        .fade-in { animation: fadeIn 0.3s ease-in; }
+        .shake { animation: shake 0.5s ease-in-out; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="logo-container fade-in">
+        <img src="asset\Logo.svg" alt="Logo" class="logo">
+    </div>
+
+    <div class="register fade-in"> <h1>用户登录🤗</h1> <h2>育音EduVoiceLab</h2> <form>
+            <div class="input-group">
+                <label for="username">用户名</label> <input type="text" 
+                       id="username" name="username" placeholder="请输入用户名或手机号" required>
+                <div id="username-error" class="error-message"></div> </div>
+
+            <div class="input-group">
+                 <label for="password">密码</label>
+                <input type="password" 
+                       id="password" 
+                       name="password"
+                       placeholder="请输入密码" 
+                       required
+                       minlength="8">
+                <div id="password-error" class="error-message"></div>
+            </div>
+
+            <button class="register-button" type="button" 
+                    onclick="loginRedirect()"> <span>登录</span> </button>
+        </form>
+
+        <p class="register-link-text"> 还没有帐号？<a href="register.html">去注册</a> </p>
+
+    </div>
+
+    <footer class="fade-in">
+        @copyright: 2025Chuwu
+    </footer>
+
+    <script>
+        // 修改函数名称以更符合登录页面的用途
+        function loginRedirect() {
+            // 在实际应用中，这里会是发送用户名和密码到服务器进行验证的逻辑。
+            // 验证成功后，再进行页面跳转。
+
+            // 由于是模拟，这里直接进行跳转
+            console.log("Attempting to login and redirect..."); 
+
+            // 假设验证成功并跳转到 Gradio 应用的地址
+            // 请将 '127.0.0.1:8000' 替换为您实际的 Gradio 应用地址
+             window.location.href = 'http://127.0.0.1:8000'; 
+        }
+
+        // 注意：新添加的“去注册”链接 (<a href="register.html">) 直接使用浏览器导航，
+        // 不需要额外的JavaScript函数。
+    </script>
+</body>
+</html>

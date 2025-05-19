@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduVoiceLab注册</title> <style>
+        /* 定义背景变量 */
+        :root {
+            --bg: repeating-linear-gradient(
+                45deg,       /* 渐变角度为45度 */
+                #a7f3d0,     /* 起始颜色：浅绿色 */
+                #a7f3d0 10px, /* 颜色块宽度：10px */
+                #ecfdf5 10px, /* 下一段颜色从10px开始 */
+                #ecfdf5 20px  /* 颜色块总宽度：20px（形成10px间隔的条纹） */
+            );
+        }
+
+        /* 全局样式 */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center; /* 水平居中 */
+            align-items: center;     /* 垂直居中，后续通过transform调整偏移 */
+            min-height: 100vh;
+            background: var(--bg); 
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Logo容器样式 */
+        .logo-container { 
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: rgba(255, 255, 255, 0.85); 
+            border-radius: 8px; 
+            padding: 5px; 
+            transition: transform 0.3s ease;
+        }
+
+        .logo-container.fade-in { 
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .logo-container:hover { 
+            transform: scale(1.1);
+        }
+
+        /* Logo图片样式 */
+        .logo-container .logo { 
+            display: block; 
+            width: 140px;
+            height: auto;
+            opacity: 0.8; 
+            position: static; 
+            top: auto;
+            left: auto;
+            transition: none;
+        }
+
+
+        /* 表单容器 */
+        .register {
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 30px; 
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            width: 100%; 
+            max-width: 400px; 
+            text-align: left; 
+            position: relative;
+            transform: translateY(-10px); 
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        /* 保留hover时的 transform 效果 */
+        .register:hover {
+            transform: translateY(-15px); 
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.15);
+        }
+
+
+        /* 标题样式 */
+        .register h1 {
+            margin: 0 0 10px 0;
+            font-size: 24px;
+            color: #333;
+            transition: color 0.3s ease;
+        }
+
+        .register h1:hover {
+            color: #55c5ea;
+        }
+
+        /* 次标题样式 */
+        .register h2 {
+            margin: 0 0 20px 0;
+            font-size: 14px;
+            color: #666;
+            transition: color 0.3s ease;
+        }
+
+        /* 输入框容器 */
+        .input-group {
+            margin-bottom: 15px; 
+            position: relative;
+        }
+
+        /* 标签样式 */
+        .input-group label {
+            display: block;
+            margin-bottom: 6px;
+            color: #333;
+            font-size: 14px;
+            transition: color 0.3s ease;
+        }
+
+        /* 输入框样式 (用户名、密码) */
+        .input-group input:not([type="checkbox"]):not([type="tel"]) { 
+            width: 100%; 
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s ease;
+            background-color: #fff;
+            box-sizing: border-box; 
+        }
+
+        .input-group input:not([type="checkbox"]):not([type="tel"]):focus {
+            border-color: #55c5ea;
+            box-shadow: 0 0 0 3px rgba(85, 197, 234, 0.2);
+        }
+
+        /* 输入错误状态 */
+        .input-error {
+            border-color: #ff4444 !important;
+            box-shadow: 0 0 0 3px rgba(255, 68, 68, 0.2);
+        }
+
+        /* 错误信息样式 */
+        .error-message {
+            color: #ff4444;
+            font-size: 12px;
+            margin-top: 4px;
+            transition: all 0.3s ease;
+            display: none; /* 默认隐藏 */
+        }
+
+        .error-message.show { 
+            display: block; /* JS控制显示 */
+        }
+
+        /* 手机号前缀选择样式 */
+        .phone-prefix {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%; 
+            box-sizing: border-box; 
+        }
+
+        .phone-prefix select {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s ease;
+            background-color: #fff;
+            box-sizing: border-box; 
+        }
+
+        .phone-prefix select:focus {
+            border-color: #55c5ea;
+            box-shadow: 0 0 0 3px rgba(85, 197, 234, 0.2);
+        }
+
+        .phone-prefix input[type="tel"] { 
+            flex: 1; 
+            width: auto; 
+            padding: 12px; 
+            border: 2px solid #e0e0e0; 
+            border-radius: 8px; 
+            font-size: 14px; 
+            outline: none; 
+            transition: all 0.3s ease; 
+            background-color: #fff; 
+            box-sizing: border-box; 
+        }
+         .phone-prefix input[type="tel"]:focus {
+            border-color: #55c5ea;
+            box-shadow: 0 0 0 3px rgba(85, 197, 234, 0.2);
+         }
+
+
+        /* 同意协议样式 */
+        .agree-terms {
+            margin-bottom: 20px; 
+        }
+
+        .agree-terms label {
+            display: flex; 
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #666;
+            cursor: pointer;
+        }
+
+        .agree-terms input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .agree-terms a {
+            color: #55c5ea;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .agree-terms a:hover {
+            color: #77e8fe;
+            text-decoration: underline;
+        }
+
+        /* 注册按钮样式 */
+        .register-button {
+            width: 100%; 
+            max-width: 300px; 
+            display: block; 
+            margin: 0 auto; 
+            margin-top: 20px; 
+
+            padding: 14px;
+            background-color: #55c5ea;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .register-button:hover {
+            background-color: #77e8fe;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(85, 197, 234, 0.3);
+        }
+
+        .register-button:active {
+            transform: translateY(0);
+        }
+
+        /* 已有帐号链接文本样式 */
+        .login-link-text {
+            text-align: center; 
+            margin-top: 20px; 
+            font-size: 14px; 
+            color: #666; 
+        }
+
+        /* 已有帐号链接样式 */
+        .login-link-text a {
+            color: #55c5ea; 
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .login-link-text a:hover {
+            color: #77e8fe; 
+            text-decoration: underline;
+        }
+
+        /* 加载指示器样式 (不再自动生效，但保留定义) */
+        .htmx-indicator {
+            display: none; 
+            transition: opacity 0.3s ease;
+        }
+
+        /* Footer样式 */
+        footer {
+            position: absolute;
+            bottom: 10px;
+            width: 100%;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            transition: opacity 0.3s ease;
+        }
+
+        footer:hover {
+            opacity: 0.8;
+        }
+
+        /* 响应式适配 */
+        @media (max-width: 480px) {
+            .register {
+                width: 90%;
+                max-width: 350px; 
+                padding: 20px; 
+                margin: 20px;
+                transform: translateY(-5px); 
+            }
+
+            .logo {
+                width: 80px;
+            }
+
+            .register-button {
+                 max-width: 250px; 
+            }
+        }
+
+        /* 禁用状态样式 */
+        input:disabled, 
+        select:disabled, 
+        button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        
+        /* 添加动画相关的CSS */
+        .fade-in { animation: fadeIn 0.3s ease-in; }
+        .shake { animation: shake 0.5s ease-in-out; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="logo-container fade-in">
+        <img src="asset\Logo.svg" alt="Logo" class="logo">
+    </div>
+
+    <div class="register fade-in">
+        <h1>欢迎注册🥰</h1>
+        <h2>育音EduVoiceLab</h2>
+
+        <form>
+            <div class="input-group">
+                <label for="nickname">用户名</label>
+                <input type="text" 
+                       id="nickname" 
+                       name="nickname"
+                       placeholder="请输入用户名" 
+                       required
+                       minlength="2">
+                <div id="nickname-error" class="error-message"></div>
+            </div>
+
+            <div class="input-group">
+                 <label for="password">密码</label>
+                 <input type="password" 
+                       id="password" 
+                       name="password"
+                       placeholder="请输入密码" 
+                       required
+                       minlength="8">
+                <div id="password-error" class="error-message"></div>
+            </div>
+
+            <div class="input-group">
+                <label for="phone">手机号</label>
+                <div class="phone-prefix">
+                    <select id="phone-prefix" name="phone_prefix">
+                        <option value="+86">+86</option>
+                        <option value="+1">+1</option>
+                        <option value="+81">+81</option>
+                    </select>
+                    <input type="tel" 
+                           id="phone" 
+                           name="phone"
+                           placeholder="请输入手机号" 
+                           required
+                           pattern="[0-9]{11}">
+                </div>
+                <div id="phone-error" class="error-message"></div>
+            </div>
+
+            <div class="agree-terms">
+                <label>
+                    <input type="checkbox" 
+                           name="agree" 
+                           required>
+                    我已阅读并同意<a href="#" class="terms-link">服务协议</a>
+                </label>
+                 <div id="agree-error" class="error-message"></div>
+            </div>
+
+            <button class="register-button" type="submit">
+                <span>立即注册</span>
+            </button>
+        </form>
+
+        <p class="login-link-text">
+            已有帐号？<a href="login.html">跳转登录</a>
+        </p>
+
+    </div>
+
+    <footer class="fade-in">
+        @copyright: 2025 EduVoiceLab </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取表单和所有需要验证的输入元素及错误提示div
+            const form = document.querySelector('.register form');
+            const nicknameInput = document.getElementById('nickname');
+            const passwordInput = document.getElementById('password');
+            const phoneInput = document.getElementById('phone');
+            const agreeCheckbox = document.querySelector('.agree-terms input[type="checkbox"]');
+
+            const nicknameError = document.getElementById('nickname-error');
+            const passwordError = document.getElementById('password-error');
+            const phoneError = document.getElementById('phone-error');
+            const agreeError = document.getElementById('agree-error');
+
+            // 重置单个输入框的错误状态
+            function resetError(input, errorDiv) {
+                input.classList.remove('input-error');
+                input.classList.remove('shake');
+                if (errorDiv) {
+                    errorDiv.classList.remove('show');
+                    errorDiv.textContent = ''; // 清空错误信息文本
+                }
+                 // 特别处理 checkbox 的关联错误
+                 if (input.type === 'checkbox' && errorDiv) {
+                     input.closest('label').classList.remove('input-error'); // 如果有给label加错误样式的需求
+                 }
+            }
+
+            // 显示单个输入框的错误状态和信息
+            function showError(input, errorDiv, message) {
+                input.classList.add('input-error');
+                input.classList.add('shake'); // 添加抖动动画类
+                if (errorDiv) {
+                    errorDiv.textContent = message;
+                    errorDiv.classList.add('show'); // 显示错误信息
+                }
+                // 在动画结束后移除 shake 类，以便下次可以重新触发
+                setTimeout(() => input.classList.remove('shake'), 500);
+
+                // 特别处理 checkbox 的关联错误
+                if (input.type === 'checkbox' && errorDiv) {
+                    // agreeCheckbox.closest('label').classList.add('input-error'); // 如果有给label加错误样式的需求
+                }
+            }
+
+            // 监听表单的 submit 事件
+            form.addEventListener('submit', function(event) {
+                event.preventDefault(); // 阻止表单的默认提交行为
+
+                let isValid = true; // 标记表单是否有效
+
+                // 1. 提交前先重置所有错误状态
+                resetError(nicknameInput, nicknameError);
+                resetError(passwordInput, passwordError);
+                resetError(phoneInput, phoneError);
+                resetError(agreeCheckbox, agreeError); // 重置 checkbox 错误
+
+                // 2. 执行验证
+
+                // 验证 用户名/昵称
+                if (nicknameInput.value.trim() === '') {
+                    showError(nicknameInput, nicknameError, '用户名不能为空');
+                    isValid = false;
+                }
+                // 注意：这里可以添加 minlength, pattern 等更多验证逻辑，
+                // 与 HTML5 属性配合或替换它们，以实现统一的错误提示样式。
+                // 例如：else if (nicknameInput.value.trim().length < 2) { ... }
+
+                // 验证 密码
+                if (passwordInput.value.trim() === '') {
+                     showError(passwordInput, passwordError, '密码不能为空');
+                     isValid = false;
+                }
+                // 例如：else if (passwordInput.value.trim().length < 8) { ... }
+
+                // 验证 手机号
+                if (phoneInput.value.trim() === '') {
+                     showError(phoneInput, phoneError, '手机号不能为空');
+                     isValid = false;
+                }
+                 // 例如：else if (!/^[0-9]{11}$/.test(phoneInput.value.trim())) { ... }
+
+
+                // 验证 同意服务协议 复选框
+                if (!agreeCheckbox.checked) {
+                    // 复选框通常没有 input-error 或 shake 样式，只显示文本错误信息
+                    if (agreeError) {
+                        agreeError.textContent = '请阅读并同意服务协议';
+                        agreeError.classList.add('show');
+                    }
+                    // 如果需要，可以给复选框或其label添加错误样式
+                    // agreeCheckbox.classList.add('input-error'); 
+                    isValid = false;
+                }
+
+                // 3. 如果所有字段都有效，则跳转到登录页面
+                if (isValid) {
+                    console.log("Registration form is valid. Redirecting to login page.");
+                    // 执行跳转到 login.html
+                    window.location.href = 'login.html'; 
+                }
+            });
+
+            // 移除原有的模拟跳转函数，因为现在由表单的 submit 事件处理
+            // function redirectToGradio() { ... } 
+        });
+    </script>
+</body>
+</html>
