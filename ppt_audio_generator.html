@@ -1,0 +1,223 @@
+<!-- 仅作演示，真实需要外部 LLM API / MCP Server 的接入 -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PPT讲解配音</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1.5.10/css/pico.min.css">
+    <style>
+        /* 定义背景变量 */
+        :root {
+            --bg: repeating-linear-gradient(
+                45deg,       /* 渐变角度为45度 */
+                #a7f3d0,     /* 起始颜色：浅绿色 */
+                #a7f3d0 10px, /* 颜色块宽度：10px */
+                #ecfdf5 10px, /* 下一段颜色从10px开始 */
+                #ecfdf5 20px  /* 颜色块总宽度：20px（形成10px间隔的条纹） */
+            );
+        }
+
+        /* 全局样式 */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Align items to the top */
+            min-height: 100vh;
+            background: var(--bg);
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .container {
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            text-align: left;
+            margin-top: 50px; /* Add some space from the top */
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        progress {
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        #audioPlayer {
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .button-group button {
+            flex-grow: 1;
+            margin: 0 5px;
+        }
+
+        .button-group button:first-child {
+             margin-left: 0;
+        }
+
+        .button-group button:last-child {
+             margin-right: 0;
+        }
+
+        /* Style for the hidden audio input */
+        #audioFile {
+            position: absolute;
+            left: -9999px;
+        }
+
+        /* Style for the audio upload area */
+        #audioUploadArea {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>PPT讲解配音</h1>
+
+        <img src="asset/ppt.webp" alt="PPT Icon" style="display: block; margin: 0 auto 20px auto; max-width: 100%; height: auto; width: 200px;">
+
+        <label for="pptFile" id="pptLabel">上传PPT文件 (ppt/pptx/pdf)</label>
+        <input type="file" id="pptFile" name="pptFile" accept=".ppt, .pptx, .pdf" required>
+
+        <div id="audioUploadArea">
+             <label for="audioFile">育音EduVoiceLab</label>
+             <input type="file" id="audioFile" name="audioFile" accept="audio/*">
+        </div>
+
+        <progress id="progressBar" value="0" max="100" class="hidden"></progress>
+
+        <audio id="audioPlayer" controls class="hidden"></audio>
+
+        <div class="button-group">
+            <button id="generateButton">开始生成</button>
+            <button id="reloadButton" class="secondary">重载</button>
+        </div>
+
+    </div>
+
+    <script>
+        const pptFile = document.getElementById('pptFile');
+        const audioFile = document.getElementById('audioFile');
+        const generateButton = document.getElementById('generateButton');
+        const reloadButton = document.getElementById('reloadButton');
+        const progressBar = document.getElementById('progressBar');
+        const audioPlayer = document.getElementById('audioPlayer');
+        const audioUploadArea = document.getElementById('audioUploadArea');
+
+        let audioFileUploaded = null;
+
+        // Handle PPT file upload
+        pptFile.addEventListener('change', function() {
+            // You might want to add validation here for file type/size
+            console.log('PPT file selected:', this.files[0]);
+        });
+
+        // Handle hidden audio file upload
+        audioFile.addEventListener('change', function() {
+            audioFileUploaded = this.files[0];
+            console.log('Audio file selected:', audioFileUploaded);
+        });
+
+        // 处理生成/播放按钮点击事件
+        generateButton.addEventListener('click', function() {
+            if (generateButton.textContent === '开始生成') {
+                // 修改PPT上传提示
+                document.getElementById('pptLabel').textContent = '正在上传并生成';
+                // 检查是否上传PPT
+                if (!pptFile.files[0]) {
+                    document.getElementById('pptLabel').textContent = '请上传PPT文件';
+                    return;
+                }
+                // 模拟生成进度
+                pptFile.classList.add('hidden');
+                generateButton.disabled = true;
+                progressBar.classList.remove('hidden');
+                progressBar.value = 0;
+                generateButton.classList.add('hidden'); // 隐藏按钮，直到生成结束
+
+                const duration = 10000; // 10秒
+                const interval = 100;
+                const steps = duration / interval;
+                const increment = 100 / steps;
+                let currentProgress = 0;
+
+                const progressInterval = setInterval(() => {
+                    currentProgress += increment;
+                    progressBar.value = currentProgress;
+                    if (currentProgress >= 100) {
+                        clearInterval(progressInterval);
+                        progressBar.classList.add('hidden');
+                        document.getElementById('pptLabel').textContent = '生成完毕，请点击播放';
+                        generateButton.textContent = '播放音频';
+                        generateButton.disabled = false;
+                        generateButton.classList.remove('hidden'); // 生成结束后显示播放按钮
+                    }
+                }, interval);
+            } else if (generateButton.textContent === '播放音频') {
+                // 播放音频
+                if (audioFileUploaded) {
+                    const audioURL = URL.createObjectURL(audioFileUploaded);
+                    audioPlayer.src = audioURL;
+                    audioPlayer.classList.remove('hidden');
+                    audioPlayer.play();
+                    generateButton.classList.add('hidden');
+                }
+            }
+        });
+
+        // Handle Reload button click
+        reloadButton.addEventListener('click', function() {
+            // 重置表单和状态
+            pptFile.value = '';
+            pptFile.classList.remove('hidden');
+            audioFile.value = '';
+            audioFileUploaded = null;
+
+            generateButton.textContent = '开始生成';
+            generateButton.disabled = false;
+            generateButton.classList.remove('hidden');
+            progressBar.classList.add('hidden');
+            progressBar.value = 0;
+            audioPlayer.classList.add('hidden');
+            audioPlayer.src = '';
+            document.getElementById('pptLabel').textContent = '上传PPT文件 (ppt/pptx/pdf)';
+            console.log('Page reloaded.');
+        });
+
+    </script>
+
+</body>
+</html>
